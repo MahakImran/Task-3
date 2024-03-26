@@ -1,0 +1,114 @@
+#include <iostream>
+#include <vector>
+#include <cstring>
+using namespace std;
+
+const int N = 9;
+
+// Function to print the Sudoku grid
+void printGrid(vector<vector<int>>& grid) {
+    for (int row = 0; row < N; row++) {
+        for (int col = 0; col < N; col++) {
+            cout << grid[row][col] << " ";
+        }
+        cout << endl;
+    }
+}
+
+// Function to check if a number can be placed at a given position
+bool isSafe(vector<vector<int>>& grid, int row, int col, int num) {
+    // Check if the number is not already present in the current row and column
+    for (int x = 0; x < N; x++) {
+        if (grid[row][x] == num || grid[x][col] == num) {
+            return false;
+        }
+    }
+
+    // Check if the number is not already present in the current 3x3 grid
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (grid[i + startRow][j + startCol] == num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+// Function to solve the Sudoku puzzle
+bool solveSudoku(vector<vector<int>>& grid) {
+    int row, col;
+
+    // Find an empty cell in the grid
+    bool isEmpty = false;
+    for (row = 0; row < N; row++) {
+        for (col = 0; col < N; col++) {
+            if (grid[row][col] == 0) {
+                isEmpty = true;
+                break;
+            }
+        }
+        if (isEmpty) {
+            break;
+        }
+    }
+
+    // If no empty cell is found, the puzzle is solved
+    if (!isEmpty) {
+        return true;
+    }
+
+    // Try placing numbers from 1 to 9
+    for (int num = 1; num <= 9; num++) {
+        if (isSafe(grid, row, col, num)) {
+            grid[row][col] = num;
+
+            // Recursively solve the puzzle
+            if (solveSudoku(grid)) {
+                return true;
+            }
+
+            // If no solution found, backtrack and try next number
+            grid[row][col] = 0;
+        }
+    }
+
+    // If no number can be placed, return false
+    return false;
+}
+
+int main() {
+   vector<vector<int>> grid(N, vector<int>(N, 0));
+   cout<<"______________________________________________________________________________________"<<endl<<endl;
+   cout<<"                             WELCOME TO SUDOKU SOLVER                             "<<endl;
+   cout<<"______________________________________________________________________________________"<<endl;
+   cout<<"--------------------------------------------------------------------------------------"<<endl;
+   cout<<"                             Enter the Initial Sudoku Configuration                             "<<endl<<endl;
+
+    // Input Sudoku puzzle from the user
+    cout << "Enter the Sudoku puzzle (Enter 0 for empty cells):\n";
+    for (int row = 0; row < N; row++) {
+        cout << "Row " << row + 1 << ": ";
+        for (int col = 0; col < N; col++) {
+            cin >> grid[row][col];
+        }
+    }
+    
+    cout<<"--------------------------------------------------------------------------------------"<<endl;
+    cout<<"______________________________________________________________________________________"<<endl<<endl;
+    cout<<"                            SOLUTION STATUS                           "<<endl<<endl;
+
+    // Solve Sudoku puzzle
+    if (solveSudoku(grid)) {
+        cout << "Sudoku puzzle solved successfully:\n";
+        printGrid(grid);
+    } else {
+        cout << "No solution exists for the given Sudoku puzzle.\n";
+    }
+     cout<<"______________________________________________________________________________________";
+
+    return 0;
+}
